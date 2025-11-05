@@ -14,7 +14,7 @@ const templates = [
     description: 'Build modern web applications with React and Vite',
     icon: '⚛️',
     color: 'from-cyan-500 to-blue-500',
-    features: ['React 18', 'Vite', 'Hot Module Replacement', 'TypeScript Support'],
+    features: ['React 18', 'Vite 5', 'TypeScript', 'Hot Module Reload', 'Functional Todo App'],
   },
   {
     id: 'mern',
@@ -22,7 +22,7 @@ const templates = [
     description: 'Full-stack application with MongoDB, Express, React, and Node.js',
     icon: '🚀',
     color: 'from-green-500 to-emerald-500',
-    features: ['MongoDB', 'Express.js', 'React', 'Node.js', 'Full-stack Setup'],
+    features: ['MongoDB', 'Express.js', 'React 18', 'Node.js', 'Full-stack Setup'],
   },
   {
     id: 'cpp',
@@ -30,7 +30,7 @@ const templates = [
     description: 'High-performance C++ development environment',
     icon: '⚙️',
     color: 'from-blue-600 to-indigo-600',
-    features: ['GCC Compiler', 'C++17/20', 'CMake Support', 'Debugging Tools'],
+    features: ['GCC Compiler', 'C++17/20', 'CMake Support', 'Debugging Tools', 'STL Libraries'],
   },
   {
     id: 'java',
@@ -38,7 +38,7 @@ const templates = [
     description: 'Enterprise Java application development',
     icon: '☕',
     color: 'from-orange-500 to-red-500',
-    features: ['JDK 17', 'Maven/Gradle', 'Spring Boot Ready', 'JUnit Testing'],
+    features: ['JDK 17', 'Maven/Gradle', 'Spring Boot', 'JUnit Testing', 'Hot Reload'],
   },
 ];
 

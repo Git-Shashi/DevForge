@@ -1,0 +1,27 @@
+\chapter{Results and Discussion}
+\section{Validation}
+We validated DevForge against the success criteria in Chapter 3 by executing end-to-end user flows on a macOS host with Docker Desktop and local MongoDB/Redis services:
+\begin{itemize}
+    \item Account creation and login succeeded; protected routes were enforced.
+    \item Project creation instantiated a persistent container with the expected volume and restart policy.
+    \item File tree navigation and editor edits were reflected on disk; auto-save worked with debounce.
+    \item Terminal streamed logs from the container; a sample dev server was started.
+    \item Allocated port was reachable via the browser.
+\end{itemize}
+
+\section{Observations}
+\begin{itemize}
+    \item Resource limits (512MB, 1 vCPU) were sufficient for basic MERN/Node templates.
+    \item Atomic port reservation in Redis avoided conflicts when creating multiple projects back-to-back.
+    \item The Monaco editor provided robust language features without additional configuration.
+\end{itemize}
+
+\section{Limitations}
+\begin{itemize}
+    \item Single-host orchestration; no multi-tenant isolation beyond Docker namespaces.
+    \item No built-in collaboration (multi-user editing) in this version.
+    \item Manual cleanup may be required for orphaned containers if the database is pruned incorrectly.
+\end{itemize}
+
+\section{Future Improvements}
+Planned enhancements include multi-user collaboration, prebuilds for faster startup, improved log streaming via websockets, and optional Kubernetes support for horizontal scaling.

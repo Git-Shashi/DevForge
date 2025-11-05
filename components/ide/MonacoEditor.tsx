@@ -13,7 +13,8 @@ import {
   Minimize2, 
   Settings,
   FileCode,
-  Wrench
+  Wrench,
+  RefreshCw
 } from 'lucide-react';
 
 interface MonacoEditorProps {
@@ -30,6 +31,7 @@ export default function MonacoEditor({ projectId }: MonacoEditorProps) {
   const [editorContent, setEditorContent] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const isSwitchingFiles = useRef(false);
   const [editorSettings, setEditorSettings] = useState({
     fontSize: 14,
     minimap: true,
@@ -45,7 +47,7 @@ export default function MonacoEditor({ projectId }: MonacoEditorProps) {
     if (activeFile) {
       setEditorContent(activeFile.content);
     }
-  }, [activeFile?.id, activeFile?.content]);
+  }, [activeFile?.id, activeFile?.content, activeFile]);
 
   useEffect(() => {
     let isMounted = true;
@@ -123,6 +125,9 @@ export default function MonacoEditor({ projectId }: MonacoEditorProps) {
 
           // Handle content changes
           editorRef.current.onDidChangeModelContent(() => {
+            // Don't update Redux store if we're switching files
+            if (isSwitchingFiles.current) return;
+            
             if (!activeFileId) return;
             const content = editorRef.current?.getValue() || '';
             const activeFile = openFiles.find((f: any) => f.id === activeFileId);
@@ -208,28 +213,35 @@ export default function MonacoEditor({ projectId }: MonacoEditorProps) {
   useEffect(() => {
     if (!editorRef.current || !activeFile || !monacoRef.current) return;
 
+    // Set flag to prevent content updates during file switch
+    isSwitchingFiles.current = true;
+
     // Update editor when active file changes
     const currentModel = editorRef.current.getModel();
     const newValue = activeFile.content;
     
-    if (currentModel?.getValue() !== newValue) {
-      editorRef.current.setValue(newValue);
-      
-      // Set cursor to the beginning and focus
-      editorRef.current.setPosition({ lineNumber: 1, column: 1 });
-      editorRef.current.focus();
-      
-      // Reveal the first line
-      editorRef.current.revealLineInCenter(1);
-    }
-
+    // Always update the value when switching files
+    editorRef.current.setValue(newValue);
+    
     // Update language
     monacoRef.current.editor.setModelLanguage(
       currentModel!,
       activeFile.language || 'plaintext'
     );
+    
+    // Set cursor to the beginning and focus
+    editorRef.current.setPosition({ lineNumber: 1, column: 1 });
+    editorRef.current.focus();
+    
+    // Reveal the first line
+    editorRef.current.revealLineInCenter(1);
+
+    // Re-enable content updates after a short delay
+    setTimeout(() => {
+      isSwitchingFiles.current = false;
+    }, 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeFileId, activeFile?.content, activeFile?.language]);
+  }, [activeFileId]);
 
   // Auto-save handler
   useEffect(() => {
@@ -272,6 +284,45 @@ export default function MonacoEditor({ projectId }: MonacoEditorProps) {
         content: activeFile.content,
       })
     );
+  };
+
+  const handleReloadFile = async () => {
+    if (!activeFile || !editorRef.current) return;
+    
+    try {
+      // Fetch fresh content from the server
+      const response = await fetch(`/api/files/read?projectId=${projectId}&path=${encodeURIComponent(activeFile.path)}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const freshContent = data.content || '';
+        
+        // Prevent the onChange handler from firing during reload
+        isSwitchingFiles.current = true;
+        
+        // Update editor content
+        editorRef.current.setValue(freshContent);
+        
+        // Update Redux store with fresh content
+        dispatch(
+          updateFileContent({
+            path: activeFile.path,
+            content: freshContent,
+          })
+        );
+        
+        // Re-enable change tracking
+        setTimeout(() => {
+          isSwitchingFiles.current = false;
+        }, 100);
+        
+        console.log('✅ File reloaded from container:', activeFile.path);
+      } else {
+        console.error('Failed to reload file:', response.status);
+      }
+    } catch (error) {
+      console.error('Error reloading file:', error);
+    }
   };
 
   const handleFormatDocument = () => {
@@ -366,6 +417,24 @@ export default function MonacoEditor({ projectId }: MonacoEditorProps) {
               title="Save (Cmd/Ctrl+S)"
             >
               <Save className="w-4 h-4" />
+            </button>
+
+            {/* Reload Button */}
+            <button
+              onClick={handleReloadFile}
+              className="p-1.5 rounded transition-colors"
+              style={{ color: 'var(--text-tertiary)' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+                e.currentTarget.style.color = 'var(--text-primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = 'var(--text-tertiary)';
+              }}
+              title="Reload file from container"
+            >
+              <RefreshCw className="w-4 h-4" />
             </button>
 
             {/* Find Button */}

@@ -1,0 +1,117 @@
+\documentclass[a4paper, 11pt, oneside]{report} 
+
+\newcommand{\plogo}{\fbox{$\mathcal{PL}$}} 
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{float}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{fouriernc} 
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{graphics}
+\usepackage{longtable}
+\usepackage[nottoc]{tocbibind}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{lipsum}
+
+\begin{document} 	
+	\begin{titlepage} 
+		\centering 
+		\vspace*{\baselineskip} 
+		\vspace{0.75\baselineskip}
+		{\LARGE F1 Simulation Project Using C}
+		\vspace{0.75\baselineskip}
+		\vspace{2\baselineskip}
+		A report submitted for the course named Project/Internship - XXX (CSXXX)
+		\vspace*{7\baselineskip}
+		Submitted By
+		\vspace{0.5\baselineskip}
+		{\scshape\Large Sameer Badami\\ Semester 5 \\ Roll No: 220103008}
+		\vspace{0.5\baselineskip}
+		Supervised By
+		\vspace{0.5\baselineskip}
+		{\scshape\Large Prof. Motilal}
+		\vfill
+		\begin{center}
+			\includegraphics[width=5cm]{report_file/iiit_manipur.png}
+		\end{center}
+		{\scshape\small Department of Computer Science and Engineering\\ Indian Institute of Information Technology Senapati, Manipur \\ Month, Year}
+	\end{titlepage}
+	
+	\begin{center}
+	   { \LARGE \textbf{Declaration}}
+	\end{center}
+	In this submission, I have expressed my idea in my own words, and I have adequately cited and referenced any ideas or words that were taken from another source. 
+	\vspace{1cm}\hspace{7cm} Sameer Badami \\
+	\vspace{1cm}\hspace{9cm} Roll No: 220103008 \\
+	\vspace{1cm} DATE: DD-MONTH-YYYY
+
+	\newpage
+
+	\begin{center}
+		\thispagestyle{empty}
+		\begin{table}
+			\centering
+			\includegraphics[scale=0.2]{report_file/iiit_manipur.png}
+			\begin{tabular}{l}
+				Department of Computer Science and Engineering \\
+				Indian Institute of Information Technology Senapati, Manipur \\
+			\end{tabular}
+		\end{table}
+		\par\noindent\rule{\textwidth}{0.4pt}
+			Prof. Motilal
+			\hspace*{\fill} Email: \href{mailto:motilal@iiitmanipur.ac.in}{motilal@iiitmanipur.ac.in}\\
+		{\Huge \textbf{\emph{To Whom It May Concern}}}\\[2cm]
+		\linespread{1.13}
+		\large{This is to certify that the project/internship report entitled \textbf{"F1 Simulation Project Using C",} submitted by \textbf{Sameer Badami} bearing roll number 220103008, is a record bonafide work.}\\[2.0cm]
+		\hspace*{2.6in}\large{Signature of Supervisor}\\[0.3cm]
+		\hspace*{2.5in}\textbf{(Prof. Motilal)}\\[0.5cm]
+	\end{center}
+
+	\newpage
+
+	\begin{abstract}
+		The F1 Simulation Project using C is a comprehensive program designed to simulate real-world racing scenarios. The project takes into account user-defined car characteristics such as horsepower, aerodynamics, and reliability, as well as race conditions like the number of laps and track venues. Race results, including lap times and podium standings, are dynamically generated based on these inputs. The simulation provides insights into how different car configurations impact race outcomes. In addition to race simulation, the system offers a detailed analysis of race results, including average lap times and performance statistics for each car manufacturer. The project aims to replicate the thrill of Formula 1 racing while offering a modular and expandable codebase for future enhancements.
+	\end{abstract}
+
+	\newpage
+
+	\begin{center}
+		{ \LARGE \textbf{Acknowledgment}}
+	\end{center}
+	I would like to express my gratitude to my supervisor, Prof. Motilal, for his invaluable guidance throughout the course of this project. His support and expertise made it possible to develop this simulation system successfully. I am also thankful to my peers and my family, whose encouragement and input helped shape the outcome of this project.
+	
+	\hspace{7cm} Sameer Badami
+
+	\tableofcontents
+	\listoffigures
+	\listoftables
+	
+	\chapter{Introduction}
+	\input{chapters/1_Introduction}
+	
+	\chapter{Literature Survey}
+	\input{chapters/2_Literature_Survey}
+	
+	\chapter{Requirement Engineering}
+	\input{chapters/3_Requirement}
+	
+	\chapter{System Design}
+	\input{chapters/4_System_Design}
+	
+	\chapter{Implementation}
+	\input{chapters/5_Implementation}
+	
+	\chapter{Results}
+	\input{chapters/6_Results}
+	
+	\chapter{Conclusion}
+	\input{chapters/7_Conclusion}
+	
+	\bibliography{refs}	
+\end{document}

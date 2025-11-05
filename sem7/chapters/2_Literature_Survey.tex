@@ -1,0 +1,21 @@
+\chapter{Literature Survey}
+
+\section{Introduction}
+This survey reviews modern web IDEs and enabling technologies that inform DevForge’s design. We consider editor technology, container orchestration at the application level, and cloud-hosted developer environments.\cite{monaco,docker}
+
+\section{Cloud IDEs and Hosted Environments}
+	extbf{GitHub Codespaces} provides managed dev containers with VS Code in the browser and ephemeral but restorable environments tightly coupled to repositories.\cite{codespaces} \textbf{Gitpod} offers prebuilds and on-demand dev workspaces with containerized environments.\cite{gitpod} Both emphasize reproducibility, collaboration, and integrations but are proprietary services. DevForge focuses on a self-hostable model with transparent implementation, tailored API routes, and fine-grained control.
+
+\section{In-Browser Editing}
+Monaco Editor supplies a VS Code–grade editing surface with language services, diagnostics, and rich editing APIs, making it a de facto choice for browser IDEs.\cite{monaco} DevForge integrates Monaco with auto-save and state management via Redux Toolkit.\cite{rtk}
+
+\section{Containerization and Persistence}
+Docker enables consistent dev environments. DevForge provisions one persistent container per project with resource limits and restart policy \texttt{unless-stopped}, managed through the Node.js dockerode client.\cite{docker,dockerode} Compared to cluster-scale orchestrators (Kubernetes), this project targets single-host simplicity while enabling future scale-out.
+
+\section{Platform Services}
+Data and state are anchored by MongoDB for users/projects, and Redis for port allocation and caching.\cite{mongodb,redis} Authentication is implemented with NextAuth (credentials provider) and bcrypt-based password hashing.\cite{nextauth,bcryptjs}
+
+\section{Summary}
+Existing platforms demonstrate the value of cloud dev environments. DevForge adapts these ideas into a self-hostable stack with clear interfaces, prioritizing persistence, simplicity, and extensibility.
+
+\newpage

@@ -1,0 +1,25 @@
+\chapter{Testing and Quality Assurance}
+\section{Test Plan}
+\begin{itemize}
+  \item Unit tests for services (projects, files, docker manager)
+  \item Integration tests for API routes (auth, files, projects)
+  \item Manual exploratory testing of IDE flows
+  \item Performance checks: file operations and log streaming latency
+\end{itemize}
+
+\section{Sample Test Cases}
+\begin{longtable}{@{}p{2cm} p{9cm} p{3cm}@{}}
+\toprule
+\textbf{ID} & \textbf{Description} & \textbf{Result} \\
+\midrule
+\endhead
+T-001 & Create account, login, access dashboard & Pass \\
+T-002 & Create project, verify container exists and running & Pass \\
+T-003 & Edit file in editor, verify changes on disk & Pass \\
+T-004 & Start dev server in terminal, access via assigned port & Pass \\
+T-005 & Attempt path traversal in read API & Blocks, 400 Bad Request \\
+\bottomrule
+\end{longtable}
+
+\section{Performance}
+On a modest macOS host, editor actions are instantaneous; file operations and log updates typically complete under one second on a LAN. Further optimization can batch writes and compress streams.

@@ -1,0 +1,21 @@
+\chapter{Security and Privacy}
+\section{Threat Model}
+We consider risks across authentication, data access, and container isolation.
+\begin{longtable}{@{}p{4cm} p{9cm}@{}}
+\toprule
+\textbf{Threat} & \textbf{Mitigation} \\
+\midrule
+\endhead
+Credential stuffing & Rate limit auth, lockout policy, bcrypt hashing, password rules \\
+Session hijacking & HTTPOnly cookies, SameSite, short-lived tokens, CSRF protections \\
+Path traversal & Normalize and validate file paths against project root \\
+Container breakout & Drop privileges, disable --privileged, restrict mounts, resource limits \\
+Secret leakage & Use environment variables, avoid logging secrets, scoped access \\
+\bottomrule
+\end{longtable}
+
+\section{OWASP Alignment}
+We align with relevant controls from OWASP ASVS for auth, input validation, and session management.\cite{owaspasvs}
+
+\section{Audit and Logging}
+API requests are logged with minimal PII. Administrative actions (container create/delete) are audited. Logs rotate and exclude sensitive payloads.

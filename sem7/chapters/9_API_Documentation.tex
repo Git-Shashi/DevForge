@@ -1,0 +1,51 @@
+\chapter{API Documentation}
+This section documents representative API routes. All routes are under the Next.js App Router and return JSON.
+
+\section{Authentication}
+\begin{longtable}{@{}p{2cm} p{7cm} p{5cm}@{}}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Notes} \\
+\midrule
+\endhead
+POST & /api/auth/signup & Create user with email/password (credentials provider) \\
+POST & /api/auth/signin & Sign in; returns session/cookie \\
+\bottomrule
+\end{longtable}
+
+\section{Projects}
+\begin{longtable}{@{}p{2cm} p{7cm} p{5cm}@{}}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Notes} \\
+\midrule
+\endhead
+GET & /api/projects/list & List projects for current user \\
+POST & /api/projects/create & Create project (type: MERN/React/Node/Python) \\
+DELETE & /api/projects/{id} & Delete project and stop/remove container \\
+\bottomrule
+\end{longtable}
+
+\section{Files}
+\begin{longtable}{@{}p{2cm} p{7cm} p{5cm}@{}}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Notes} \\
+\midrule
+\endhead
+GET & /api/files/tree?projectId=... & Return directory tree \\
+GET & /api/files/read?path=... & Read file content \\
+POST & /api/files/write & Write file content (path, content) \\
+\bottomrule
+\end{longtable}
+
+\section{Docker}
+\begin{longtable}{@{}p{2cm} p{7cm} p{5cm}@{}}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Notes} \\
+\midrule
+\endhead
+GET & /api/docker/logs/{projectId} & Stream container logs \\
+POST & /api/docker/restart/{projectId} & Restart container (optional) \\
+\bottomrule
+\end{longtable}
+
+\section{Conventions}
+All endpoints require authentication unless explicitly noted. Request/response bodies follow JSON conventions with clear error codes and messages.

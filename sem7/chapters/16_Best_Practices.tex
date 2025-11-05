@@ -1,0 +1,28 @@
+\chapter{Engineering Best Practices}
+\section{Code Quality}
+\begin{itemize}
+  \item TypeScript everywhere; strict mode enabled.
+  \item ESLint and Prettier to enforce conventions.
+  \item Small, pure functions and React components; testable services.
+\end{itemize}
+
+\section{Security}
+\begin{itemize}
+  \item Follow OWASP ASVS \cite{owasp-asvs}.
+  \item Input validation and output encoding; deny-by-default.
+  \item Secrets via environment variables; avoid hardcoding.
+\end{itemize}
+
+\section{Performance}
+\begin{itemize}
+  \item Memoize expensive selectors; code-split routes.
+  \item Use streaming where possible for logs and large file reads.
+  \item Limit container resources and reuse base images.
+\end{itemize}
+
+\section{Reliability}
+\begin{itemize}
+  \item Retry with backoff for transient errors (DB/Redis/Docker).
+  \item Idempotent APIs; structured logs with correlation IDs.
+  \item Health checks and readiness probes for services.
+\end{itemize}

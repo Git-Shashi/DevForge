@@ -29,7 +29,7 @@ const MonacoEditor = dynamic(() => import('@/components/ide/MonacoEditor'), { ss
 const FileExplorer = dynamic(() => import('@/components/ide/FileExplorer'), { ssr: false });
 const Terminal = dynamic(() => import('@/components/ide/Terminal'), { ssr: false });
 const Preview = dynamic(() => import('@/components/ide/Preview'), { ssr: false });
-const CopilotChat = dynamic(() => import('@/components/ide/CopilotChat'), { ssr: false });
+const AICopilot = dynamic(() => import('@/components/ide/AICopilot'), { ssr: false });
 const ThemeSwitcher = dynamic(() => import('@/components/theme/ThemeSwitcher'), { ssr: false });
 
 export default function IDEPage() {
@@ -406,12 +406,34 @@ export default function IDEPage() {
                 {previewOpen && copilotOpen ? (
                   <>
                     {activeTab === 'preview' && <Preview projectId={projectId} />}
-                    {activeTab === 'copilot' && <CopilotChat projectId={projectId} />}
+                    {activeTab === 'copilot' && (
+                      <AICopilot 
+                        projectId={projectId}
+                        currentFile="untitled"
+                        fileContent=""
+                        language="typescript"
+                        selectedText=""
+                        onApplySuggestion={(code: string, filePath: string) => {
+                          console.log('Apply suggestion to:', filePath, code);
+                          // TODO: Dispatch action to insert suggestion at cursor
+                        }}
+                      />
+                    )}
                   </>
                 ) : previewOpen ? (
                   <Preview projectId={projectId} />
                 ) : (
-                  <CopilotChat projectId={projectId} />
+                  <AICopilot 
+                    projectId={projectId}
+                    currentFile="untitled"
+                    fileContent=""
+                    language="typescript"
+                    selectedText=""
+                    onApplySuggestion={(code: string, filePath: string) => {
+                      console.log('Apply suggestion to:', filePath, code);
+                      // TODO: Dispatch action to insert suggestion at cursor
+                    }}
+                  />
                 )}
               </div>
             </div>

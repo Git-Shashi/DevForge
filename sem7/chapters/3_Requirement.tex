@@ -1,0 +1,50 @@
+\chapter{Requirement Engineering}
+
+\section{Introduction}
+This chapter captures the functional and non-functional requirements for DevForge, a self-hostable, web-based IDE with persistent Docker containers. Requirements are informed by developer workflows and comparable cloud IDEs.\cite{codespaces,gitpod}
+
+\section{User Requirements}
+Primary users are developers who create and manage projects in the browser; secondary users include administrators who configure infrastructure. Users need:
+\begin{itemize}
+    \item \textbf{Account access and security:} Sign up/in, session persistence, and protected routes.\cite{nextauth}
+    \item \textbf{Project management:} Create, list, open, and delete projects across supported tech stacks.
+    \item \textbf{IDE workspace:} File explorer, code editor (Monaco), and a real-time terminal.\cite{monaco}
+    \item \textbf{Persistent environments:} Per-project containers that survive restarts and maintain installed dependencies.\cite{docker}
+    \item \textbf{Port access:} Automatically assigned ports for running apps (frontend/backend) with conflict-free routing via Redis.\cite{redis}
+\end{itemize}
+
+\section{Functional Requirements}
+\begin{itemize}
+    \item \textbf{Authentication APIs:} Credential-based signup/signin; hashed passwords; session tokens.
+    \item \textbf{Projects API:} CRUD operations; metadata stored in MongoDB.\cite{mongodb}
+    \item \textbf{Files API:} Read/write files; list directory tree; debounce auto-save on editor changes.
+    \item \textbf{Docker API:} Create/start/stop containers; attach volumes; resource limits; restart policy.
+    \item \textbf{Terminal/Logs:} Stream container logs to the UI in near real time.
+    \item \textbf{Port Allocation:} Reserve/release TCP ports using Redis to avoid collisions.
+\end{itemize}
+
+\section{Non-functional Requirements}
+\begin{itemize}
+    \item \textbf{Security:} Password hashing (bcrypt), role-based route protection, and safe file operations.\cite{bcryptjs}
+    \item \textbf{Reliability:} Container restart policy \emph{unless-stopped}; recovery after host restarts.
+    \item \textbf{Performance:} Editor interactions feel instantaneous; file ops and logs under a second on LAN.
+    \item \textbf{Scalability:} Support dozens of concurrent projects on a single host; enable future horizontal scaling.
+    \item \textbf{Maintainability:} Strong typing with TypeScript; modular slices and utilities.\cite{rtk}
+    \item \textbf{Portability:} Runs on macOS/Linux with Docker Desktop or engine.
+\end{itemize}
+
+\section{System Constraints}
+\begin{itemize}
+    \item Single-host Docker orchestration (no Kubernetes) in this version.
+    \item Browser-based editor (no native VS Code extension integration).
+    \item Network egress required for pulling base images and dependencies.
+\end{itemize}
+
+\section{Success Criteria}
+\begin{itemize}
+    \item User can create an account, create a project, edit a file, run a dev server in the terminal, and access the assigned port.
+    \item Container persists project state across restarts.
+    \item Admin can list and remove orphaned containers.
+\end{itemize}
+
+\newpage

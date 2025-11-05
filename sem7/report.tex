@@ -1,0 +1,151 @@
+\documentclass[a4paper, 12pt, oneside]{report}
+
+\newcommand{\plogo}{\fbox{$\mathcal{PL}$}} 
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{fouriernc} 
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{graphics}
+\usepackage{longtable}
+\usepackage[nottoc]{tocbibind}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{lipsum}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=blue,
+	citecolor=blue
+}
+
+% Headers/footers and section styling (research-paper feel)
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{DevForge Project Report}
+\fancyhead[RE,LO]{\leftmark}
+\fancyfoot[CE,CO]{\thepage}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+	itlespacing*{\section}{0pt}{*3}{*1}
+	itlespacing*{\subsection}{0pt}{*2}{*0.8}
+	itlespacing*{\subsubsection}{0pt}{*1.5}{*0.6}
+\microtypecontext{spacing=nonfrench}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{\baselineskip}
+\vspace{0.75\baselineskip}
+{\LARGE DevForge: Web-Based IDE with Persistent Docker Containers}
+\vspace{0.75\baselineskip}
+\vspace{2\baselineskip}
+{A project report submitted in partial fulfillment of the requirements of the degree}
+\\[0.25\baselineskip]
+{of Bachelor of Technology}
+\\[1.0\baselineskip]
+{in Computer Science and Engineering}
+\vspace*{5\baselineskip}
+\begin{tabular}{p{0.45\textwidth} p{0.45\textwidth}}
+	extbf{Submitted by:} & \textbf{Supervised by:} \\
+Your Name & Supervisor Name \\
+Roll No: XXXXXXX & Department/Institute \\
+\end{tabular}
+\vfill
+\begin{center}
+\includegraphics[width=5cm]{report_file/iiit manipur.png}
+\end{center}
+{\scshape\small Department of Computer Science and Engineering\\ Indian Institute of Information Technology Senapati, Manipur \\ \today}
+\end{titlepage}
+	
+	\begin{center}
+	{ \LARGE \textbf{Declaration}}
+	\end{center}
+	I hereby declare that the work presented in this report titled \textbf{\emph{DevForge: Web-Based IDE with Persistent Docker Containers}} is an authentic record of my own work carried out during the academic term. All sources of information have been duly acknowledged through proper citations and references.
+	\\[1cm]
+	\hfill Signature: \rule{4cm}{0.4pt}
+	\\[0.4cm]
+	\hfill Name: \rule{5cm}{0.4pt}
+	\\[0.4cm]
+	\hfill Roll No: \rule{4cm}{0.4pt}
+	\\[0.8cm]
+	Date: \rule{4cm}{0.4pt}
+
+	\newpage
+
+	\begin{center}
+		hispagestyle{empty}
+	\begin{table}
+	\centering
+	\includegraphics[scale=0.2]{report_file/iiit manipur.png}
+	\begin{tabular}{l}
+	Department of Computer Science and Engineering \\
+	Indian Institute of Information Technology Senapati, Manipur \\
+	\end{tabular}
+	\end{table}
+	\par\noindent\rule{\textwidth}{0.4pt}
+		extbf{Supervisor Certificate}\\[1.0cm]
+	\linespread{1.13}
+	\large{This is to certify that the project report entitled \textbf{\emph{DevForge: Web-Based IDE with Persistent Docker Containers}} is a bona fide record of work carried out by the student under my supervision.}\\[2.0cm]
+	\hspace*{2.6in}\large{Signature of Supervisor}\\[0.3cm]
+	\hspace*{2.5in}\textbf{(Name and Designation)}\\[0.5cm]
+	\end{center}
+
+	\newpage
+
+	\begin{abstract}
+	DevForge is a full-stack, web-based integrated development environment (IDE) that provisions persistent Docker containers per project and provides a modern editing experience in the browser using the Monaco editor. The platform is built with Next.js 14 (App Router) and TypeScript, and integrates MongoDB for metadata, Redis for port allocation and caching, NextAuth for authentication, and Docker management via dockerode. Key features include multi-project management, file system operations, a real-time terminal view, and automatic port management for frontend and backend services. This report details the motivation, requirements, architecture, implementation, and evaluation of DevForge, and positions it relative to existing cloud IDE solutions such as GitHub Codespaces and Gitpod.\cite{codespaces,gitpod}
+	\end{abstract}
+
+	\begin{center}
+	{ \LARGE \textbf{Acknowledgment}}
+	\end{center}
+	I would like to thank my supervisor for guidance and feedback throughout the project, and my peers for their helpful discussions and reviews. The open-source communities behind Next.js, Docker, MongoDB, Redis, and Monaco provided invaluable tooling and documentation.\cite{nextjs,docker,mongodb,redis,monaco}
+	\\[0.6cm]
+	\hfill \rule{5cm}{0.4pt}\\[-0.2cm]
+	\hfill Signature
+	I would like to express my gratitude to my supervisor, Prof. Motilal, for his invaluable guidance throughout the course of this project. His support and expertise made it possible to develop this simulation system successfully. I am also thankful to my peers and my family, whose encouragement and input helped shape the outcome of this project.
+	
+	\hspace{7cm} Sameer Badami
+
+	\tableofcontents
+	\input{chapters/1_Introduction}
+	\input{chapters/2_Literature_Survey}
+	\input{chapters/3_Requirement}
+	\input{chapters/4_System_Design}
+	\input{chapters/5_Implementation}
+	\input{chapters/8_Architecture_Details}
+	\input{chapters/9_API_Documentation}
+	\input{chapters/10_Data_Models}
+	\input{chapters/11_Security_Privacy}
+	\input{chapters/12_Testing_QA}
+	\input{chapters/13_DevOps_Deployment}
+	\input{chapters/14_User_Guide}
+	\input{chapters/15_Packages_and_Licenses}
+	\input{chapters/16_Best_Practices}
+	\input{chapters/6_Results}
+	\input{chapters/7_Conclusion}
+
+	\bibliographystyle{plain}
+	\bibliography{report}
+ 
+\end{document}

@@ -1,0 +1,40 @@
+\chapter{Data Models}
+\section{User}
+\begin{longtable}{@{}p{4cm} p{9cm}@{}}
+\toprule
+\textbf{Field} & \textbf{Description} \\
+\midrule
+\endhead
+_id & ObjectId \\
+email & Unique, required \\
+passwordHash & Bcrypt hash (credentials provider) \\
+createdAt & ISO timestamp \\
+updatedAt & ISO timestamp \\
+\bottomrule
+\end{longtable}
+
+\section{Project}
+\begin{longtable}{@{}p{4cm} p{9cm}@{}}
+\toprule
+\textbf{Field} & \textbf{Description} \\
+\midrule
+\endhead
+_id & ObjectId \\
+ownerId & Reference to User \\
+name & Project name \\
+type & One of: MERN, React, Node, Python \\
+containerName & Docker container identifier \\
+hostPath & Host path to project files \\
+containerPath & Mount path inside container \\
+frontendPort & Allocated port (optional) \\
+backendPort & Allocated port (optional) \\
+createdAt & ISO timestamp \\
+updatedAt & ISO timestamp \\
+\bottomrule
+\end{longtable}
+
+\section{Indexes}
+\begin{itemize}
+  \item Users: unique index on email
+  \item Projects: compound index on (ownerId, name)
+\end{itemize}

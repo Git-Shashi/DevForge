@@ -1,0 +1,91 @@
+\chapter{System Design}
+
+\section{Introduction}
+System design involves defining the architecture, components, and data flow that the F1 Simulation Project will use to simulate races and track performance. In this chapter, we will delve into the structural and behavioral aspects of the system, including the design of the system's architecture, use case scenarios, activity diagrams, input/output design, and more. These elements ensure that the project is well-structured and meets the specified requirements outlined in the previous chapter.
+
+\section{System Architecture}
+The system architecture outlines the high-level design of the F1 Simulation Project. It includes the major components such as the user interface, simulation engine, performance tracker, and results output. These components interact to produce the simulation results based on user inputs.
+
+The architecture comprises the following:
+\begin{itemize}
+    \item \textbf{User Interface:} A simple interface where the user can input car, driver, and venue choices.
+    \item \textbf{Simulation Engine:} The core module that processes race dynamics such as lap times and positions.
+    \item \textbf{Performance Tracker:} Tracks driver statistics, including lap timings and podium results.
+    \item \textbf{Results Output:} Displays race results and commentary based on driver performance.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{A_detailed_system_architecture_diagram_for_an_F1_r.png}
+    \caption{System Architecture of F1 Simulation Project}
+\end{figure}
+
+\section{Process Design}
+The process design focuses on how different modules interact to achieve the overall functionality of the F1 simulation. The simulation begins with user inputs, which are then processed by the simulation engine to produce race outcomes.
+
+The steps in the process are:
+\begin{enumerate}
+    \item The user selects car, driver, and venue from the dropdown menus.
+    \item The simulation engine calculates performance metrics such as lap times and car speeds based on input parameters like horsepower and aerodynamics.
+    \item Driver statistics are tracked during each lap, and race standings are updated in real-time.
+    \item The system displays the final podium standings and generates race commentary.
+\end{enumerate}
+
+\section{Use Case Design}
+The use case design outlines the user interactions with the system. Below is a sample use case diagram that shows the interaction between the user and the system.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{A_use_case_diagram_showing_interaction.png}
+    \caption{Use Case Diagram for F1 Simulation}
+\end{figure}
+
+\textbf{Use Case: Race Simulation}
+\begin{itemize}
+    \item \textbf{Actor:} User (motorsport enthusiast)
+    \item \textbf{Pre-condition:} The system must be running, and the user should have access to the input interface.
+    \item \textbf{Description:} The user selects a car, driver, and race venue. The simulation engine processes the race based on these parameters, and the system displays the final race results.
+    \item \textbf{Post-condition:} The user views the race results, including podium standings and race commentary.
+\end{itemize}
+
+\section{Access Scenario}
+The access scenario describes how users access different system components. Below is an example access flow:
+\begin{enumerate}
+    \item User opens the system.
+    \item The main menu displays options for car selection, driver selection, and race venues.
+    \item User selects options and submits race parameters.
+    \item The simulation engine starts processing.
+    \item The system generates and displays race results.
+\end{enumerate}
+
+\section{Activity Diagrams}
+The activity diagrams visualize the flow of actions within the F1 Simulation Project. They help in understanding how different modules and user interactions lead to the final output.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Activity_diagram_simulation_flow.png}
+    \caption{Activity Diagram for F1 Simulation Flow}
+\end{figure}
+
+The above diagram outlines how the simulation engine processes user inputs and generates race results. Each step corresponds to a distinct activity, such as car and driver selection, lap time calculations, and podium results generation.
+
+\section{Output Design}
+Output design refers to the format and structure of the race results displayed to the user. This includes the podium standings, lap timings, and commentary generated based on the car and driver performance. The user will receive:
+\begin{itemize}
+    \item \textbf{Podium Standings:} Display of the 1st, 2nd, and 3rd place drivers.
+    \item \textbf{Lap Timings:} Detailed timings for each driver for all laps.
+    \item \textbf{Commentary:} Race commentary highlighting key events during the race, such as overtakes or lap records.
+\end{itemize}
+
+\section{Input Design}
+Input design is focused on how users will interact with the system. The F1 Simulation Project includes the following inputs:
+\begin{itemize}
+    \item \textbf{Dropdowns:} Users can select car manufacturers, drivers, and race venues using dropdown menus.
+    \item \textbf{Text Fields:} Users can input numerical values for attributes like horsepower, aerodynamics, and reliability.
+    \item \textbf{Buttons:} Submit buttons are used to initiate the race simulation after all inputs have been provided.
+\end{itemize}
+
+\section{Conclusion}
+The system design chapter provides a clear roadmap of how the F1 Simulation Project will be structured and implemented. By breaking down the architecture, process design, and user interactions, we ensure that the project is well-organized and aligns with the requirements outlined earlier. The diagrams and models in this chapter give a visual representation of how the system works, from user input to the final output of race results and statistics.
+
+\newpage

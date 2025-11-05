@@ -1,0 +1,70 @@
+\chapter{System Design}
+
+\section{Overview}
+DevForge comprises a Next.js 14 frontend, API routes for server logic, a MongoDB data layer, Redis for coordination, and a Docker management layer using dockerode. This section outlines the architecture, key flows, and I/O design.\cite{nextjs,mongodb,redis,docker,dockerode}
+
+\section{Architecture}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.2cm, every node/.style={font=\small}]
+        % Clients
+        \node[draw, rounded corners, fill=blue!5, minimum width=3.2cm] (browser) {Browser (Monaco Editor, UI)};
+
+        % Next.js
+        \node[draw, rounded corners, fill=green!5, below=of browser, minimum width=5.5cm] (next) {Next.js App Router (Pages + API Routes)};
+
+        % Services
+        \node[draw, rounded corners, fill=orange!10, below left=0.8cm and -0.2cm of next, minimum width=3.6cm] (mongo) {MongoDB (Users, Projects)};
+        \node[draw, rounded corners, fill=orange!10, below right=0.8cm and -0.2cm of next, minimum width=3.6cm] (redis) {Redis (Port Allocation, Cache)};
+        \node[draw, rounded corners, fill=orange!10, below=2.2cm of next, minimum width=4.6cm] (docker) {Docker Engine (Per-Project Containers)};
+
+        % Arrows
+        \draw[->] (browser) -- node[right]{HTTP(S)} (next);
+        \draw[->] (next) -- node[left]{CRUD} (mongo);
+        \draw[->] (next) -- node[right]{Allocate Ports} (redis);
+        \draw[->] (next) -- node[right]{dockerode} (docker);
+        \draw[<->, dashed] (browser) to[bend left=12] node[right]{Logs / Terminal} (docker);
+    \end{tikzpicture}
+    \caption{High-level architecture of DevForge}
+\end{figure}
+
+\section{Key Components}
+\begin{itemize}
+    \item \textbf{Frontend (Next.js + React):} Renders IDE views, integrates Monaco, and orchestrates API calls.
+    \item \textbf{API Routes:} Authentication, projects, files, docker, and logs endpoints.
+    \item \textbf{Auth (NextAuth):} Credential provider, sessions, and protected routes.\cite{nextauth}
+    \item \textbf{Database (MongoDB):} User and project schemas; indexes for lookups.
+    \item \textbf{Redis:} Atomic port allocation within configured ranges.
+    \item \textbf{Docker Manager:} Creates containers with volumes, limits, and restart policy.
+\end{itemize}
+
+\section{Use Case: Create and Open Project}
+\begin{enumerate}
+    \item User signs in; session established.
+    \item User creates a project via Projects API.
+    \item Server provisions a container with mounted project directory and reserves ports via Redis.
+    \item User opens IDE: file tree loads, editor opens, terminal attaches to container logs.
+\end{enumerate}
+
+\section{Activity Flow}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=0.8cm]
+        \node[draw, rounded corners, fill=blue!5] (start) {Start};
+        \node[draw, rounded corners, below=of start] (auth) {Authenticate};
+        \node[draw, rounded corners, below=of auth] (create) {Create Project};
+        \node[draw, rounded corners, below=of create] (provision) {Provision Container + Ports};
+        \node[draw, rounded corners, below=of provision] (ide) {Open IDE (Files, Editor, Terminal)};
+        \node[draw, rounded corners, below=of ide] (run) {Run Dev Server in Terminal};
+        \node[draw, rounded corners, below=of run] (access) {Access App via Assigned Port};
+        \node[draw, rounded corners, fill=blue!5, below=of access] (end) {End};
+        \draw[->] (start) -- (auth) -- (create) -- (provision) -- (ide) -- (run) -- (access) -- (end);
+    \end{tikzpicture}
+    \caption{Activity flow for project lifecycle}
+\end{figure}
+
+\section{Input/Output Design}
+	extbf{Inputs:} Auth credentials; project type; file contents; terminal commands.\\
+	extbf{Outputs:} Project list; file trees; editor content; terminal logs; allocated ports.
+
+\newpage

@@ -83,7 +83,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
 
+    // Check if rootPath exists
+    if (!project.rootPath) {
+      console.error('Project missing rootPath:', projectId);
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Project configuration error: missing rootPath' 
+      }, { status: 500 });
+    }
+
+    console.log('Building file tree for:', project.rootPath);
     const tree = await buildFileTree(project.rootPath);
+    console.log('File tree built successfully, items:', tree.length);
 
     return NextResponse.json({ success: true, tree });
   } catch (error: any) {

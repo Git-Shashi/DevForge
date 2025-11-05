@@ -242,7 +242,323 @@ async function setupProjectInContainer(
       console.log('Installing frontend dependencies...');
       await execCommand(container, ['sh', '-c', `cd /app/frontend && npm install`]);
       
-      // Update Vite config to accept connections from all hosts
+      // Create proper App.tsx and main.tsx files with functional features
+      console.log('Creating functional starter frontend files...');
+      const createStarterFiles = `
+cat > /app/frontend/src/App.tsx << 'APPEOF'
+import { useState, useEffect } from 'react';
+
+interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+function App() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+
+  useEffect(() => {
+    // Check backend connection
+    fetch('http://localhost:3001/api/health')
+      .then(res => res.json())
+      .then(() => setBackendStatus('connected'))
+      .catch(() => setBackendStatus('error'));
+
+    // Load todos from localStorage
+    const savedTodos = localStorage.getItem('todos');
+    if (savedTodos) {
+      setTodos(JSON.parse(savedTodos));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save todos to localStorage whenever they change
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
+
+  const addTodo = () => {
+    if (inputValue.trim()) {
+      setTodos([...todos, { id: Date.now(), text: inputValue, completed: false }]);
+      setInputValue('');
+    }
+  };
+
+  const toggleTodo = (id: number) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  const deleteTodo = (id: number) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  const completedCount = todos.filter(t => t.completed).length;
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '2rem',
+      fontFamily: 'system-ui, -apple-system, sans-serif'
+    }}>
+      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{
+          background: 'white',
+          padding: '2rem',
+          borderRadius: '1rem 1rem 0 0',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        }}>
+          <h1 style={{ 
+            fontSize: '2.5rem', 
+            margin: '0 0 0.5rem 0',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            📝 DevForge Todo App
+          </h1>
+          <p style={{ color: '#666', margin: 0 }}>
+            A functional React + TypeScript starter application
+          </p>
+        </div>
+
+        {/* Backend Status */}
+        <div style={{
+          background: backendStatus === 'connected' ? '#d4edda' : backendStatus === 'error' ? '#f8d7da' : '#fff3cd',
+          padding: '1rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          fontSize: '0.875rem'
+        }}>
+          <span style={{ 
+            width: '8px', 
+            height: '8px', 
+            borderRadius: '50%',
+            background: backendStatus === 'connected' ? '#28a745' : backendStatus === 'error' ? '#dc3545' : '#ffc107',
+            display: 'inline-block'
+          }} />
+          <span style={{ color: '#333' }}>
+            Backend API: {backendStatus === 'connected' ? '✓ Connected' : backendStatus === 'error' ? '✗ Disconnected' : 'Checking...'}
+          </span>
+        </div>
+
+        {/* Add Todo Input */}
+        <div style={{
+          background: 'white',
+          padding: '1.5rem',
+          display: 'flex',
+          gap: '1rem'
+        }}>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+            placeholder="What needs to be done?"
+            style={{
+              flex: 1,
+              padding: '0.75rem',
+              fontSize: '1rem',
+              border: '2px solid #e0e0e0',
+              borderRadius: '0.5rem',
+              outline: 'none',
+            }}
+          />
+          <button
+            onClick={addTodo}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.5rem',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '1rem'
+            }}
+          >
+            Add
+          </button>
+        </div>
+
+        {/* Todo List */}
+        <div style={{
+          background: 'white',
+          maxHeight: '400px',
+          overflowY: 'auto'
+        }}>
+          {todos.length === 0 ? (
+            <div style={{ 
+              padding: '3rem', 
+              textAlign: 'center', 
+              color: '#999',
+              fontSize: '1.1rem'
+            }}>
+              🎉 No todos yet! Add one above to get started.
+            </div>
+          ) : (
+            todos.map(todo => (
+              <div
+                key={todo.id}
+                style={{
+                  padding: '1rem 1.5rem',
+                  borderBottom: '1px solid #f0f0f0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  transition: 'background 0.2s',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#f8f9fa'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+              >
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => toggleTodo(todo.id)}
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    cursor: 'pointer'
+                  }}
+                />
+                <span style={{
+                  flex: 1,
+                  textDecoration: todo.completed ? 'line-through' : 'none',
+                  color: todo.completed ? '#999' : '#333',
+                  fontSize: '1rem'
+                }}>
+                  {todo.text}
+                </span>
+                <button
+                  onClick={() => deleteTodo(todo.id)}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.25rem',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Stats Footer */}
+        <div style={{
+          background: 'white',
+          padding: '1rem 1.5rem',
+          borderRadius: '0 0 1rem 1rem',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.875rem',
+          color: '#666'
+        }}>
+          <span>
+            {todos.length} {todos.length === 1 ? 'task' : 'tasks'} total
+          </span>
+          <span>
+            {completedCount} completed
+          </span>
+          {todos.length > 0 && (
+            <button
+              onClick={() => setTodos(todos.filter(t => !t.completed))}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#f8f9fa',
+                color: '#666',
+                border: '1px solid #ddd',
+                borderRadius: '0.25rem',
+                cursor: 'pointer',
+                fontSize: '0.75rem'
+              }}
+            >
+              Clear Completed
+            </button>
+          )}
+        </div>
+
+        {/* Info Card */}
+        <div style={{
+          marginTop: '2rem',
+          background: 'rgba(255, 255, 255, 0.95)',
+          padding: '1.5rem',
+          borderRadius: '1rem',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        }}>
+          <h3 style={{ margin: '0 0 1rem 0', color: '#333', fontSize: '1.1rem' }}>
+            🚀 Features Included:
+          </h3>
+          <ul style={{ margin: 0, paddingLeft: '1.5rem', color: '#666', lineHeight: '1.8' }}>
+            <li>✓ React Hooks (useState, useEffect)</li>
+            <li>✓ TypeScript interfaces</li>
+            <li>✓ LocalStorage persistence</li>
+            <li>✓ Backend API integration</li>
+            <li>✓ Responsive design</li>
+            <li>✓ Hot Module Reload (HMR)</li>
+          </ul>
+          <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#999' }}>
+            Edit <code style={{ background: '#f0f0f0', padding: '0.2rem 0.4rem', borderRadius: '0.25rem' }}>src/App.tsx</code> to customize!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+APPEOF
+
+cat > /app/frontend/src/main.tsx << 'MAINEOF'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+MAINEOF
+
+cat > /app/frontend/src/index.css << 'CSSEOF'
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+CSSEOF
+`;
+      await execCommand(container, ['sh', '-c', createStarterFiles]);
+      
+      // Update Vite config to accept connections from all hosts and allow iframe embedding
       console.log('Configuring Vite server...');
       const viteConfigUpdate = `
 cat > /app/frontend/vite.config.ts << 'EOF'
@@ -255,7 +571,11 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
-  },
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Security-Policy': "frame-ancestors *"
+    }
+  }
 })
 EOF
 `;
@@ -282,6 +602,300 @@ EOF
       console.log('Project setup completed successfully');
     } catch (error) {
       console.error('Error setting up project in container:', error);
+      throw error;
+    }
+  } else if (projectType === 'react') {
+    try {
+      console.log('Setting up React project in container...');
+      
+      // Create Vite React project directly in /app/frontend
+      console.log('Creating Vite + React + TypeScript project...');
+      await execCommand(container, [
+        'sh',
+        '-c',
+        `cd /app && npm create vite@latest frontend -- --template react-ts`,
+      ]);
+      
+      // Install frontend dependencies
+      console.log('Installing frontend dependencies...');
+      await execCommand(container, ['sh', '-c', `cd /app/frontend && npm install`]);
+      
+      // Create proper App.tsx and main.tsx files with functional features
+      console.log('Creating functional starter frontend files...');
+      const createStarterFiles = `
+cat > /app/frontend/src/App.tsx << 'APPEOF'
+import { useState, useEffect } from 'react';
+
+interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+function App() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    // Load todos from localStorage
+    const savedTodos = localStorage.getItem('todos');
+    if (savedTodos) {
+      setTodos(JSON.parse(savedTodos));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save todos to localStorage whenever they change
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
+
+  const addTodo = () => {
+    if (inputValue.trim()) {
+      setTodos([...todos, { id: Date.now(), text: inputValue, completed: false }]);
+      setInputValue('');
+    }
+  };
+
+  const toggleTodo = (id: number) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  const deleteTodo = (id: number) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  const completedCount = todos.filter(t => t.completed).length;
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '2rem',
+      fontFamily: 'system-ui, -apple-system, sans-serif'
+    }}>
+      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{
+          background: 'white',
+          padding: '2rem',
+          borderRadius: '1rem 1rem 0 0',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        }}>
+          <h1 style={{ 
+            fontSize: '2.5rem', 
+            margin: '0 0 0.5rem 0',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            📝 DevForge Todo App
+          </h1>
+          <p style={{ color: '#666', margin: 0 }}>
+            A functional React + TypeScript starter application
+          </p>
+        </div>
+
+        {/* Add Todo Input */}
+        <div style={{
+          background: 'white',
+          padding: '1.5rem',
+          display: 'flex',
+          gap: '1rem'
+        }}>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+            placeholder="What needs to be done?"
+            style={{
+              flex: 1,
+              padding: '0.75rem',
+              fontSize: '1rem',
+              border: '2px solid #e0e0e0',
+              borderRadius: '0.5rem',
+              outline: 'none',
+              transition: 'border-color 0.2s'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#667eea'}
+            onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+          />
+          <button
+            onClick={addTodo}
+            style={{
+              padding: '0.75rem 2rem',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.5rem',
+              fontSize: '1rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'transform 0.2s'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            Add
+          </button>
+        </div>
+
+        {/* Stats */}
+        <div style={{
+          background: 'white',
+          padding: '1rem 1.5rem',
+          borderBottom: '1px solid #e0e0e0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontSize: '0.875rem',
+          color: '#666'
+        }}>
+          <span>Total: {todos.length}</span>
+          <span>Completed: {completedCount}</span>
+          <span>Pending: {todos.length - completedCount}</span>
+        </div>
+
+        {/* Todo List */}
+        <div style={{
+          background: 'white',
+          borderRadius: '0 0 1rem 1rem',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          maxHeight: '400px',
+          overflowY: 'auto'
+        }}>
+          {todos.length === 0 ? (
+            <div style={{
+              padding: '3rem',
+              textAlign: 'center',
+              color: '#999'
+            }}>
+              <p style={{ fontSize: '3rem', margin: '0 0 1rem 0' }}>📋</p>
+              <p style={{ margin: 0 }}>No todos yet. Add one above to get started!</p>
+            </div>
+          ) : (
+            todos.map(todo => (
+              <div
+                key={todo.id}
+                style={{
+                  padding: '1rem 1.5rem',
+                  borderBottom: '1px solid #f0f0f0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => toggleTodo(todo.id)}
+                  style={{
+                    width: '1.25rem',
+                    height: '1.25rem',
+                    cursor: 'pointer',
+                    accentColor: '#667eea'
+                  }}
+                />
+                <span style={{
+                  flex: 1,
+                  textDecoration: todo.completed ? 'line-through' : 'none',
+                  color: todo.completed ? '#999' : '#333',
+                  fontSize: '1rem'
+                }}>
+                  {todo.text}
+                </span>
+                <button
+                  onClick={() => deleteTodo(todo.id)}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    cursor: 'pointer',
+                    transition: 'opacity 0.2s'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.opacity = '0.8'}
+                  onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                >
+                  Delete
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+APPEOF
+
+cat > /app/frontend/src/index.css << 'CSSEOF'
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+CSSEOF
+`;
+      await execCommand(container, ['sh', '-c', createStarterFiles]);
+      
+      // Update Vite config to accept connections from all hosts and allow iframe embedding
+      console.log('Configuring Vite server...');
+      const viteConfigUpdate = `
+cat > /app/frontend/vite.config.ts << 'EOF'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Security-Policy': "frame-ancestors *"
+    }
+  }
+})
+EOF
+`;
+      await execCommand(container, ['sh', '-c', viteConfigUpdate]);
+      
+      // Start dev server in background with proper logging
+      console.log('Starting dev server...');
+      await execCommand(container, [
+        'sh',
+        '-c',
+        `cd /app/frontend && nohup npm run dev > /app/frontend.log 2>&1 & echo $! > /app/frontend.pid`,
+      ]);
+      
+      console.log('React project setup completed successfully');
+    } catch (error) {
+      console.error('Error setting up React project in container:', error);
       throw error;
     }
   }

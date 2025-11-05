@@ -1,0 +1,171 @@
+\chapter{Implementation}
+\section{Code Structure}
+
+The code for the F1 Simulation Project is structured into multiple files to ensure clarity and organization. Below is a brief overview of the code files:
+
+\begin{itemize}
+    \item \texttt{f1\_simulation.h}: This header file contains the definitions for structures, constants, and function declarations used in the simulation.
+    \item \texttt{f1\_functions.c}: This file includes the implementation of functions that facilitate the simulation, such as displaying information, choosing teams and drivers, and simulating the race.
+    \item \texttt{f1\_simulation.c}: This is the main file that integrates all functionalities, executes the simulation, and displays results.
+\end{itemize}
+
+\section{Code Implementation}
+
+\subsection{Header File: f1\_simulation.h}
+
+The header file includes necessary libraries, defines constants, and declares structures and functions.
+
+\begin{verbatim}
+#ifndef F1_SIMULATION_H
+#define F1_SIMULATION_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define MAX_NAME_LENGTH 50
+#define NUM_TEAMS 5
+#define NUM_VENUES 10
+#define NUM_WEATHER_CONDITIONS 4
+
+typedef struct {
+    char name[MAX_NAME_LENGTH];
+    char team[MAX_NAME_LENGTH];
+    int horsepower;
+    int reliability;
+    int aerodynamics;
+} Driver;
+
+typedef struct {
+    char name[MAX_NAME_LENGTH];
+    float length;  // in kilometers
+    int difficulty;  // 1-10 scale
+} Venue;
+
+typedef enum {
+    SUNNY,
+    CLOUDY,
+    RAINY,
+    STORMY
+} Weather;
+
+// Global variables declarations
+extern const char *team_names[NUM_TEAMS];
+extern const char *driver_names[NUM_TEAMS][2];
+extern Venue venues[NUM_VENUES];
+
+// Function declarations
+void display_f1_info();
+int choose_team();
+void choose_driver(Driver *driver, int team_index);
+void input_car_specs(Driver *driver);
+int choose_venue(Venue venues[]);
+Weather choose_weather();
+int input_laps();
+void simulate_race(Driver drivers[], int num_drivers, Venue venue, Weather weather, int laps);
+void display_podium(Driver drivers[], int num_drivers);
+
+#endif // F1_SIMULATION_H
+\end{verbatim}
+
+\subsection{Functions Implementation: f1\_functions.c}
+
+This file implements the various functions declared in the header file. Here is a snippet of the \texttt{display\_f1\_info} function:
+
+\begin{verbatim}
+#include "f1_simulation.h"
+
+void display_f1_info() {
+    printf("Welcome to the F1 Racing Simulation!\n\n");
+    printf("Formula 1 (F1) is the highest class of international auto racing for single-seater formula racing cars.\n");
+    printf("F1 seasons consist of a series of races, known as Grands Prix, held worldwide on purpose-built circuits and public roads.\n");
+    printf("The results of each race are evaluated using a points system to determine two annual World Championships: one for drivers, the other for constructors.\n\n");
+}
+\end{verbatim}
+
+\subsection{Main Implementation: f1\_simulation.c}
+
+The main file integrates all functionalities and executes the simulation. Below is the main function which serves as the entry point for the program.
+
+\begin{verbatim}
+#include "f1_simulation.h"
+
+// Global variables definitions
+const char *team_names[NUM_TEAMS] = {
+    "Mercedes", "Red Bull Racing", "Ferrari", "McLaren", "Aston Martin"
+};
+
+const char *driver_names[NUM_TEAMS][2] = {
+    {"Lewis Hamilton", "George Russell"},
+    {"Max Verstappen", "Sergio Perez"},
+    {"Charles Leclerc", "Carlos Sainz"},
+    {"Lando Norris", "Oscar Piastri"},
+    {"Fernando Alonso", "Lance Stroll"}
+};
+
+Venue venues[NUM_VENUES] = {
+    {"Monaco", 3.337, 10},
+    {"Silverstone", 5.891, 8},
+    {"Monza", 5.793, 7},
+    {"Spa-Francorchamps", 7.004, 9},
+    {"Suzuka", 5.807, 8},
+    {"Interlagos", 4.309, 7},
+    {"Melbourne", 5.303, 6},
+    {"Singapore", 5.063, 9},
+    {"Baku", 6.003, 8},
+    {"Montreal", 4.361, 7}
+};
+
+int main() {
+    srand(time(NULL));
+    Driver drivers[NUM_TEAMS];
+    int chosen_venue;
+    Weather weather;
+    int laps;
+
+    display_f1_info();
+
+    // Let the user choose all five teams and drivers
+    for (int i = 0; i < NUM_TEAMS; i++) {
+        printf("\nChoosing for Team %d:\n", i + 1);
+        int chosen_team = choose_team();
+        choose_driver(&drivers[i], chosen_team);
+        input_car_specs(&drivers[i]);
+    }
+
+    chosen_venue = choose_venue(venues);
+    weather = choose_weather();
+    laps = input_laps();
+
+    simulate_race(drivers, NUM_TEAMS, venues[chosen_venue], weather, laps);
+    display_podium(drivers, NUM_TEAMS);
+
+    return 0;
+}
+\end{verbatim}
+
+\subsection{Output}
+
+% Paste your output image here
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{path/to/your/output_image.png} % Adjust the path as necessary
+    \caption{Race Simulation Output}
+    \label{fig:simulation_output}
+\end{figure}
+
+\section{Results and Observations}
+
+During the testing phase, various scenarios were simulated to assess the functionality and performance of the code. The results varied based on team selections, driver performance, and environmental conditions.
+
+\subsection{Key Observations}
+
+\begin{itemize}
+    \item The simulation successfully evaluates driver performance based on their car specifications.
+    \item Race outcomes were influenced by factors such as weather conditions and venue difficulty.
+    \item The podium display effectively showcased the race results along with commentary, enhancing the user experience.
+\end{itemize}
+
+\end{document}
+

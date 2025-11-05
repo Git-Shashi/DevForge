@@ -1,0 +1,88 @@
+\chapter{Implementation}
+
+\section{Codebase Structure}
+The repository follows a conventional Next.js 14 App Router layout with typed modules and Redux state. A simplified view:\cite{nextjs,rtk}
+\begin{verbatim}
+DevForge/
+├── app/
+│   ├── api/
+│   │   ├── auth/           # NextAuth routes
+│   │   ├── projects/       # CRUD project routes
+│   │   ├── files/          # read/write/tree
+│   │   └── docker/         # container lifecycle, logs
+│   ├── auth/               # signin/signup UI
+│   ├── dashboard/          # projects list
+│   └── ide/[projectId]/    # IDE shell: files | editor | terminal
+├── components/ide/         # FileExplorer, MonacoEditor, Terminal
+├── lib/{auth,mongodb,redis,docker}/
+├── store/{slices,thunks,middleware}/
+└── types/                  # shared types
+\end{verbatim}
+
+\section{Key Modules}
+\subsection{Authentication}
+NextAuth credential provider with bcrypt hashing and JWT-based sessions protects API routes and pages.\cite{nextauth,bcryptjs}
+
+\subsection{Database Access}
+MongoDB stores users and projects. Connections are pooled via a shared client; models define indices for frequent lookups.\cite{mongodb}
+
+\subsection{Redis Port Allocation}
+Ports are drawn from configured ranges and reserved atomically to avoid conflicts.\cite{redis}
+
+\subsection{Docker Orchestration}
+Containers are provisioned with mounted volumes and restart policy \texttt{unless-stopped}. dockerode is used to create/start/stop and fetch logs.\cite{docker,dockerode}
+
+\subsection{Editor and Files}
+The Monaco editor auto-saves with a debounce; Files API serves directory trees and read/write operations.\cite{monaco}
+
+\section{Representative Snippets}
+\subsection{Creating a Container (dockerode)}
+\begin{verbatim}
+import Docker from 'dockerode'
+
+const docker = new Docker()
+const container = await docker.createContainer({
+    Image: 'node:18-alpine',
+    name: `devforge-${projectId}`,
+    HostConfig: {
+        Binds: [`${hostPath}:${containerPath}`],
+        RestartPolicy: { Name: 'unless-stopped' },
+        Memory: 512 * 1024 * 1024,
+        NanoCPUs: 1e9,
+    },
+    Env: [
+        `PORT=${assignedPort}`
+    ],
+    ExposedPorts: { [`${assignedPort}/tcp`]: {} },
+    Cmd: ['sh', '-lc', 'npm install && npm run dev']
+})
+await container.start()
+\end{verbatim}
+
+\subsection{Files: Tree Endpoint}
+\begin{verbatim}
+export async function GET(req) {
+    const dir = new URL(req.url).searchParams.get('dir')
+    const nodes = await readTree(dir)
+    return NextResponse.json({ nodes })
+}
+\end{verbatim}
+
+\subsection{Editor Auto-save (Redux Thunk)}
+\begin{verbatim}
+export const saveFile = createAsyncThunk('files/save', async ({ path, content }) => {
+    await fetch('/api/files/write', { method: 'POST', body: JSON.stringify({ path, content }) })
+})
+\end{verbatim}
+
+\section{Security Considerations}
+\begin{itemize}
+    \item Hash passwords with bcrypt; never store plaintext.\cite{bcryptjs}
+    \item Validate file paths to prevent directory traversal.
+    \item Scope container volumes to project directories only.
+    \item Limit CPU/RAM per container; avoid privileged mode.
+\end{itemize}
+
+\section{Deployment Notes}
+DevForge runs on macOS/Linux with Docker Desktop/Engine. Environment variables configure MongoDB, Redis, and JWT secrets. Reverse proxying (Nginx/Caddy) can terminate TLS in production.
+

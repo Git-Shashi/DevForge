@@ -1,0 +1,31 @@
+\chapter{Literature Survey}
+
+\section{Introduction}
+This chapter presents a comprehensive survey of existing literature and works related to motorsport simulation, Formula 1 racing analysis, and statistics tracking systems. The purpose of this literature survey is to understand current trends and identify key techniques used in simulating races and tracking driver performance. These insights inform the development of the F1 Simulation Project and ensure that the system we design aligns with industry standards.
+
+\section{Review of Existing Race Simulations}
+Various race simulation projects have been developed, ranging from academic prototypes to commercial games. Some notable examples include:
+\begin{itemize}
+    \item \textbf{Codemasters' F1 Series:} A widely recognized commercial game that simulates Formula 1 races with highly detailed graphics and realistic car physics. The game uses advanced algorithms to model real-world factors such as tire degradation, weather conditions, and driver behavior. However, the system is highly complex and requires significant computational resources.
+    \item \textbf{Open Source Racing Simulation (OSRSim):} An open-source project that allows users to simulate races in various motorsport disciplines, including Formula 1. OSRSim provides a simplified user interface and focuses more on ease of use than on detailed race dynamics.
+\end{itemize}
+
+\section{Race Analysis and Driver Performance Tracking}
+A key component of any race simulation system is the ability to track and analyze driver performance. In the professional racing world, this analysis is essential for both real-time race strategies and post-race reviews. Several existing systems offer insights into how this can be achieved:
+\begin{itemize}
+    \item \textbf{Race Logic's VBOX Motorsport:} A performance tracking system that uses GPS data to measure lap times, cornering speed, and braking points. This system is used by real-world teams to optimize car setup and driver performance.
+    \item \textbf{Motec's Data Logging System:} An advanced system used in professional motorsport to collect detailed telemetry data during races. It helps engineers make data-driven decisions on car setup, driver performance, and race strategy.
+\end{itemize}
+
+\section{Challenges in Race Simulations}
+Several challenges arise when developing race simulations, particularly when trying to balance realism with simplicity. These include:
+\begin{itemize}
+    \item \textbf{Realistic Car Physics:} Implementing accurate car physics requires complex algorithms to account for variables such as tire friction, downforce, and engine power. Simplifying these dynamics while maintaining a sense of realism is difficult.
+    \item \textbf{Real-time Performance Analysis:} Tracking lap-by-lap performance in real-time, particularly over a network of multiple drivers, can be computationally intensive. The F1 Simulation Project will address this by focusing on a single-player mode, where calculations are made locally.
+    \item \textbf{Dynamic Weather Conditions:} Weather plays a significant role in real-world racing, but simulating dynamic weather patterns adds a layer of complexity to race simulations. The F1 Simulation Project will exclude weather conditions to keep the scope manageable.
+\end{itemize}
+
+\section{Conclusion}
+The literature review reveals that existing systems prioritize either realism (e.g., Codemasters' F1 series) or simplicity (e.g., OSRSim). The F1 Simulation Project aims to strike a balance between the two by offering a user-friendly interface while still incorporating key performance factors such as horsepower, aerodynamics, and reliability. Additionally, race performance will be tracked on a lap-by-lap basis, offering insights into driver performance without the overhead of complex telemetry systems.
+
+\newpage

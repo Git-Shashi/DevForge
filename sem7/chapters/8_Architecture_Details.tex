@@ -1,0 +1,43 @@
+\chapter{Architecture Details}
+\section{Frontend Modules}
+This section details each major UI component and their interactions.
+\subsection{File Explorer}
+Displays a virtual file tree with lazy loading. Supports create, rename, delete, and drag-and-drop reordering. Debounces mutations to avoid excessive network round-trips.
+\subsection{Monaco Editor}
+Integrates language services and diagnostics for TypeScript/JavaScript. Auto-save is implemented with a 2-second debounce and conflict detection.
+\subsection{Terminal}
+Streams logs via server APIs that tail the container output. Commands run inside the project container to ensure environment parity.
+
+\section{Backend Services}
+\subsection{API Gateways}
+Next.js API routes serve as thin gateways, performing input validation and delegating to domain services.
+\subsection{Domain Services}
+Encapsulate business logic for projects, files, and containers. They coordinate MongoDB, Redis, and Docker.
+
+\section{Data Flow}
+\begin{enumerate}
+  \item User actions trigger API requests from the UI.
+  \item API routes validate and call services.
+  \item Services interact with MongoDB (metadata), Redis (ports), and Docker (lifecycle).
+  \item Responses update Redux state; UI re-renders.
+\end{enumerate}
+
+\section{Tables}
+\subsection{Core Modules and Responsibilities}
+\begin{longtable}{@{}p{4cm} p{10cm}@{}}
+\toprule
+\textbf{Module} & \textbf{Responsibility} \\
+\midrule
+\endhead
+UI/Components & Render IDE panes, dispatch actions, display results \\
+Redux Slices & Manage auth, projects, files, editor, terminal, docker, ui \\
+API Routes & Validate inputs, map HTTP to service calls \\
+Services & Orchestrate DB/cache/docker operations, enforce invariants \\
+MongoDB Models & Persist users, projects, project metadata \\
+Redis & Allocate and track ports for running services \\
+Docker Manager & Create/start/stop containers, attach volumes and logs \\
+\bottomrule
+\end{longtable}
+
+\section{Scalability Considerations}
+Batch file operations, compress log streams, and use connection pooling. Future scale-out can externalize Docker to a remote host or adopt Kubernetes.

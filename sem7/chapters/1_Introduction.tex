@@ -1,0 +1,49 @@
+\chapter{Introduction}
+
+\section{Overview}
+DevForge is a web-based integrated development environment (IDE) that enables users to create and manage software projects inside persistent Docker containers, directly from the browser. It combines a modern frontend built with Next.js 14 and TypeScript with a backend that orchestrates containers via Docker, persists metadata in MongoDB, and coordinates port allocation and caching via Redis. The editor experience is powered by the Monaco editor (the same core used by VS Code), and a real-time terminal streams container logs and command output.\cite{nextjs,monaco,docker,mongodb,redis}
+
+\section{Motivation and Problem Statement}
+Cloud IDEs reduce onboarding friction and eliminate “works on my machine” issues by standardizing development environments. However, many offerings are proprietary, expensive, or opaque in implementation details. Teams often need a customizable, self-hostable alternative that provides:
+\begin{itemize}
+    \item Per-project, persistent containers with consistent environments
+    \item First-class file-system operations and an editor with rich language support
+    \item Real-time terminal access for running and viewing processes
+    \item Secure, role-aware authentication and project isolation
+\end{itemize}
+DevForge addresses these needs by providing an end-to-end, open architecture that can be extended for various tech stacks (MERN, React, Node, Python) while remaining simple to operate.\cite{codespaces,gitpod}
+
+\section{Scope}
+This report documents the architecture and implementation of DevForge with the following scope:
+\begin{itemize}
+    \item Multi-project management UI and APIs
+    \item Persistent Docker container lifecycle management per project
+    \item File tree browsing, file read/write, and editor integration
+    \item Real-time terminal log streaming
+    \item Authentication and authorization using NextAuth
+    \item Port allocation and coordination using Redis
+\end{itemize}
+
+\section{Objectives}
+The key objectives are:
+\begin{itemize}
+    \item Deliver a responsive, secure web IDE with minimal latency
+    \item Ensure containers persist across restarts with controlled resource limits
+    \item Provide a robust API for projects, files, terminals, and container management
+    \item Maintain a clear, extensible codebase with typed interfaces
+\end{itemize}
+
+\section{Report Structure}
+\begin{itemize}
+    \item Chapter 2 reviews related systems and underlying technologies.
+    \item Chapter 3 outlines the requirements and constraints.
+    \item Chapter 4 presents the system design and architecture.
+    \item Chapter 5 describes the implementation details of the frontend, backend, and infrastructure.
+    \item Chapter 6 discusses results, validation, and limitations.
+    \item Chapter 7 concludes with future work.
+\end{itemize}
+
+\newpage
+
+
+

@@ -13,10 +13,15 @@ interface FileExplorerProps {
 
 export default function FileExplorer({ projectId }: FileExplorerProps) {
   const dispatch = useAppDispatch();
-  const { fileTree, loading } = useAppSelector((state) => state.fileSystem);
+  const { fileTree, loading, error } = useAppSelector((state) => state.fileSystem);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['']));
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredTree, setFilteredTree] = useState<FileNode[]>([]);
+
+  // Initial load of file tree
+  useEffect(() => {
+    dispatch(loadFileTree(projectId));
+  }, [projectId, dispatch]);
 
   // Auto-refresh file tree every 5 seconds
   useEffect(() => {
@@ -62,7 +67,7 @@ export default function FileExplorer({ projectId }: FileExplorerProps) {
     const filtered = filterFiles(fileTree);
     setFilteredTree(filtered);
     setExpandedFolders(new Set(expandedFolders)); // Trigger re-render
-  }, [searchQuery, fileTree]);
+  }, [searchQuery, fileTree, expandedFolders]);
 
   const handleRefresh = () => {
     dispatch(loadFileTree(projectId));
@@ -144,6 +149,37 @@ export default function FileExplorer({ projectId }: FileExplorerProps) {
     return (
       <div className="p-4" style={{ color: 'var(--text-tertiary)' }}>
         Loading files...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 text-center" style={{ color: 'var(--accent-red)' }}>
+        <div className="mb-2">Error loading files</div>
+        <div className="text-sm" style={{ color: 'var(--text-muted)' }}>{error}</div>
+        <button
+          onClick={() => dispatch(loadFileTree(projectId))}
+          className="mt-4 px-4 py-2 rounded transition-colors"
+          style={{ backgroundColor: 'var(--accent-blue)', color: 'white' }}
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (fileTree.length === 0 && !loading) {
+    return (
+      <div className="p-4 text-center" style={{ color: 'var(--text-muted)' }}>
+        <div className="mb-2">📁 No files found</div>
+        <button
+          onClick={() => dispatch(loadFileTree(projectId))}
+          className="mt-2 px-3 py-1.5 text-sm rounded transition-colors"
+          style={{ backgroundColor: 'var(--bg-hover)', color: 'var(--text-primary)' }}
+        >
+          Refresh
+        </button>
       </div>
     );
   }
@@ -238,7 +274,7 @@ export default function FileExplorer({ projectId }: FileExplorerProps) {
       <div className="flex-1 overflow-auto py-2">
         {filteredTree.length === 0 && searchQuery ? (
           <div className="p-4 text-center text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            No files match "{searchQuery}"
+            No files match &ldquo;{searchQuery}&rdquo;
           </div>
         ) : (
           renderFileTree(filteredTree)

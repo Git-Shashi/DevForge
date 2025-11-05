@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchProjects } from '@/store/thunks/projectThunks';
+import { Trash2 } from 'lucide-react';
 import ThemeSwitcher from '@/components/theme/ThemeSwitcher';
 
 export default function DashboardPage() {
@@ -13,6 +14,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { list: projects, loading } = useAppSelector((state) => state.projects);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -25,6 +27,34 @@ export default function DashboardPage() {
       dispatch(fetchProjects());
     }
   }, [session, dispatch]);
+
+  const handleDeleteProject = async (projectId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent navigation to IDE
+    
+    if (!confirm('Are you sure you want to delete this project? This will remove the container and all files.')) {
+      return;
+    }
+
+    setDeletingId(projectId);
+    
+    try {
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Refresh projects list
+        dispatch(fetchProjects());
+      } else {
+        const error = await response.json();
+        alert(`Failed to delete project: ${error.error || 'Unknown error'}`);
+      }
+    } catch (error: any) {
+      alert(`Error deleting project: ${error.message}`);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   if (status === 'loading') {
     return (
@@ -114,7 +144,7 @@ export default function DashboardPage() {
             {projects.map((project) => (
               <div
                 key={project._id.toString()}
-                className="rounded-lg p-6 transition-all cursor-pointer"
+                className="rounded-lg p-6 transition-all cursor-pointer relative group"
                 style={{ 
                   backgroundColor: 'var(--bg-secondary)', 
                   border: '1px solid var(--border-primary)' 
@@ -129,6 +159,30 @@ export default function DashboardPage() {
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
+                {/* Delete Button */}
+                <button
+                  onClick={(e) => handleDeleteProject(project._id.toString(), e)}
+                  disabled={deletingId === project._id.toString()}
+                  className="absolute top-4 right-4 p-2 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                  style={{
+                    backgroundColor: 'var(--accent-red)',
+                    color: '#ffffff',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  title="Delete project"
+                >
+                  {deletingId === project._id.toString() ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                </button>
+
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                   {project.projectName}
                 </h3>
